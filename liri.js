@@ -25,13 +25,31 @@ switch (action) {
 };
 
 function callSpotify() {
-    var defaultSong = spotify.search({
-        type: 'track',
-        query: 'the sign',
-    });
-
     if (toSearch === undefined) {
-        console.log(defaultSong);
+        var defaultSong = spotify.search({
+            type: 'track',
+            query: 'despacito',
+
+        }, function (err, data) {
+            if (err) {
+                return console.log('Error occurred: ' + err);
+            }
+            else {
+                console.log("\n *** 🔊  SPOTIFY  🎧  ***\n");
+                var foundTracks = data.tracks.items;
+                for (var i = 0; i < foundTracks.length; i++) {
+                    console.log('Title: ' + foundTracks[i].name);
+
+                    for (var j = 0; j < foundTracks[i].artists.length; j++) {
+                        console.log('Artist: ' + foundTracks[i].artists[j].name)
+                    }
+                    console.log('Album: ' + foundTracks[i].album.name);
+                    console.log('Preview Link: ' + foundTracks[i].preview_url)
+                    console.log("\n")
+                }
+            }
+            console.log("\n------------\n");
+        });
     }
     else {
         spotify.search({
@@ -77,23 +95,40 @@ function callTwitter() {
 
 function callOmdb() {
     console.log("\n *** 🎬  MOVIE  🎥  ***\n")
-    // Then run a request to the OMDB API with the movie specified
-    var queryUrl = "http://www.omdbapi.com/?t=" + toSearch + "&y=&plot=short&apikey=trilogy";
+    if (toSearch === undefined) {
+        var queryUrl = "http://www.omdbapi.com/?t=mr%20nobody&y=&plot=short&apikey=trilogy";
+        request(queryUrl, function (error, response, body) {
 
-    //    console.log(queryUrl);
+            if (!error && response.statusCode === 200) {
 
-    request(queryUrl, function (error, response, body) {
+                console.log("Movie Title: " + JSON.parse(body).Title + "\n");
+                console.log("* If you haven't watched Mr. Nobody, then you should: <http://www.imdb.com/title/tt0485947/> \n* It's on Netflix! \n")
+                console.log("Release Year: " + JSON.parse(body).Year);
+                console.log("Rating: " + JSON.parse(body).imdbRating);
+                console.log("Rotten Tomatoes: " + JSON.parse(body).Ratings[1].Value);
+                console.log("Country: " + JSON.parse(body).Country);
+                console.log("Language: " + JSON.parse(body).Language);
+                console.log("Plot: " + JSON.parse(body).Plot);
+                console.log("Actors: " + JSON.parse(body).Actors);
+            }
+        });
 
-        if (!error && response.statusCode === 200) {
+    }
 
-            console.log("Movie Title: " + JSON.parse(body).Title);
-            console.log("Release Year: " + JSON.parse(body).Year);
-            console.log("Rating: " + JSON.parse(body).imdbRating);
-            console.log("Rotten Tomatoes: " + JSON.parse(body).Ratings[1].Value);
-            console.log("Country: " + JSON.parse(body).Country);
-            console.log("Language: " + JSON.parse(body).Language);
-            console.log("Plot: " + JSON.parse(body).Plot);
-            console.log("Actors: " + JSON.parse(body).Actors);
-        }
-    });
+    else {
+        var queryUrl = "http://www.omdbapi.com/?t=" + toSearch + "&y=&plot=short&apikey=trilogy";
+        //    console.log(queryUrl);
+        request(queryUrl, function (error, response, body) {
+            if (!error && response.statusCode === 200) {
+                console.log("Movie Title: " + JSON.parse(body).Title);
+                console.log("Release Year: " + JSON.parse(body).Year);
+                console.log("Rating: " + JSON.parse(body).imdbRating);
+                console.log("Rotten Tomatoes: " + JSON.parse(body).Ratings[1].Value);
+                console.log("Country: " + JSON.parse(body).Country);
+                console.log("Language: " + JSON.parse(body).Language);
+                console.log("Plot: " + JSON.parse(body).Plot);
+                console.log("Actors: " + JSON.parse(body).Actors);
+            }
+        });
+    }
 }
