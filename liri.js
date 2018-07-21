@@ -22,6 +22,9 @@ switch (action) {
     case "movie-this":
         callOmdb();
         break;
+    case "do-what-it-says":
+        callRandom();
+        break;
 };
 
 function callSpotify() {
@@ -131,4 +134,16 @@ function callOmdb() {
             }
         });
     }
+}
+
+function callRandom() {
+   fs.readFile("random.txt", "utf8", function(err, data) {
+    if (err) {
+        return console.log(err);
+      }
+      var dataArr = data.split(',');
+
+      callSpotify(dataArr[1]);
+   })
+
 }
